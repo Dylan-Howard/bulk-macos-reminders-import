@@ -1,0 +1,51 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build binary
+        run: |
+          GOOS=darwin GOARCH=${{ matrix.arch }} \
+          go build -o reminders-import-darwin-${{ matrix.arch }} ./cmd/reminders-import
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reminders-import-${{ matrix.arch }}
+          path: reminders-import-darwin-${{ matrix.arch }}
+
+  release:
+    needs: build
+    runs-on: macos-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            reminders-import-amd64/reminders-import-darwin-amd64
+            reminders-import-arm64/reminders-import-darwin-arm64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
