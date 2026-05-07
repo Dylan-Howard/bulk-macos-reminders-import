@@ -73,6 +73,10 @@ func normalizeDate(input string) (string, error) {
 		"2006-01-02",
 		"1/2/2006",
 		"1/2/06",
+		"1/2/06 3:04 PM",
+		"1/2/2006 3:04 PM",
+		"01/02/06 03:04 PM",
+		"01/02/2006 03:04 PM",
 	}
 
 	for _, l := range layouts {

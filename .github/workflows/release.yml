@@ -20,12 +20,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.26'
 
       - name: Build binary
         run: |
           GOOS=darwin GOARCH=${{ matrix.arch }} \
-          go build -o reminders-import-darwin-${{ matrix.arch }} ./cmd/reminders-import
+          go build -o reminders-import-darwin-${{ matrix.arch }} ./cmd
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

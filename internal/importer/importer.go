@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"os/exec"
+	"strings"
 
 	"github.com/Dylan-Howard/reminders-import/internal/parser"
 )
@@ -14,7 +15,9 @@ func Import(records []parser.Record, list string) error {
 		return err
 	}
 
-	script := buildAppleScript(string(data), list)
+	// Escape single quotes for AppleScript
+	safeData := strings.ReplaceAll(string(data), "'", "' & quoted form of \"'\" & '")
+	script := buildAppleScript(safeData, list)
 
 	cmd := exec.Command("osascript", "-e", script)
 
@@ -49,11 +52,12 @@ tell application "Reminders"
 		set theNote to (itemRec's valueForKey:"note") as text
 		set theDue to (itemRec's valueForKey:"due") as text
 
-		try
-			set dueDate to date theDue
-		on error
+		set ISO8601Formatter to current application's NSISO8601DateFormatter's new()
+		set dueDate to ISO8601Formatter's dateFromString:theDue
+
+		if dueDate is missing value then
 			set dueDate to current date
-		end try
+		end if
 
 		tell myList
 			make new reminder with properties {name:theTitle, body:theNote, due date:dueDate}

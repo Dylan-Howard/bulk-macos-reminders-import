@@ -7,8 +7,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/Dylan-Howard/reminders-import/importer"
-	"github.com/Dylan-Howard/reminders-import/parser"
+	"github.com/Dylan-Howard/reminders-import/internal/importer"
+	"github.com/Dylan-Howard/reminders-import/internal/parser"
 )
 
 func main() {
